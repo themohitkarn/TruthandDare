@@ -1,305 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Truth or Dare Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #510d27
+  <head>
+    <meta charset="UTF-8" />
+    <title>Truth or Dare Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #510d27;
+        text-align: center;
+        padding: 20px;
+      }
+      #game {
+        max-width: 650px;
+        margin: auto;
+        background: #aa2355;
+        padding: 34px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      #playerName {
+        width: 200px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        background: #ef88ad;
+        color: #fff;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #792755;
+      }
+      #history {
+        text-align: left;
+        margin-top: 20px;
+        max-height: 250px;
+        overflow-y: auto;
+        border-top: 2px solid #ddd;
+        padding-top: 10px;
+      }
+      .entry {
+        border-bottom: 1px solid #eee;
+        padding: 8px 0;
+      }
+      #truthAnswer,
+      #dareProof {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-top: 10px;
+      }
+      .proof {
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <h2>🔥 Truth or Dare 🔥</h2>
+      <form action="{{ url_for('submit') }}" method="POST" id="playerForm">
+  <input
+    type="text"
+    id="playerName"
+    name="playerName"
+    placeholder="Enter player name"
+  />
+  <button type="button" onclick="addPlayer()">Add Player</button>
+</form>
 
-;
-      text-align: center;
-      padding: 20px;
-    }
-    #game {
-      max-width: 650px;
-      margin: auto;
-      background:  #aa2355;
-      padding: 34px;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-    #playerName {
-      width: 200px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      background:#EF88AD;
-      color: #fff;
-      cursor: pointer;
-    }
-    button:hover { background: #792755; }
-    #history {
-      text-align: left;
-      margin-top: 20px;
-      max-height: 250px;
-      overflow-y: auto;
-      border-top: 2px solid #ddd;
-      padding-top: 10px;
-    }
-    .entry {
-      border-bottom: 1px solid #eee;
-      padding: 8px 0;
-    }
-    #truthAnswer, #dareProof {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      margin-top: 10px;
-    }
-    .proof {
-      margin-top: 5px;
-    }
-  </style>
-</head>
-<body>
-  <div id="game">
-    <h2>🔥 Truth or Dare 🔥</h2>
+<p><b>Players:</b> <span id="playersList">None</span></p>
 
-    <input type="text" id="playerName" placeholder="Enter player name">
-    <button onclick="addPlayer()">Add Player</button>
-    <p><b>Players:</b> <span id="playersList">None</span></p>
 
-    <!-- Background Music -->
-    <audio id="bgm" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+  
 
-    <!-- Sound Effects -->
-<audio id="soundTruthClick" src="https://www.soundjay.com/buttons/sounds/button-11.mp3"></audio>
-    <audio id="soundDareClick" src="https://www.soundjay.com/buttons/sounds/button-12.mp3"></audio>
-    <audio id="soundTruthComplete" src="https://assets.mixkit.co/active_storage/sfx/2016/2016-preview.mp3"></audio>
-    <audio id="soundDareComplete" src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3"></audio>
-    <audio id="soundPunish" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"></audio>
-    <audio id="soundWin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+      <!-- Background Music -->
+      <audio
+        id="bgm"
+        loop
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      ></audio>
 
-    <button id="toggleMusic">🔊 Toggle Music</button>
-    <br><br>
+      <!-- Sound Effects -->
+      <audio
+        id="soundTruthClick"
+        src="https://www.soundjay.com/buttons/sounds/button-11.mp3"
+      ></audio>
+      <audio
+        id="soundDareClick"
+        src="https://www.soundjay.com/buttons/sounds/button-12.mp3"
+      ></audio>
+      <audio
+        id="soundTruthComplete"
+        src="https://assets.mixkit.co/active_storage/sfx/2016/2016-preview.mp3"
+      ></audio>
+      <audio
+        id="soundDareComplete"
+        src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3"
+      ></audio>
+      <audio
+        id="soundPunish"
+        src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"
+      ></audio>
+      <audio
+        id="soundWin"
+        src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"
+      ></audio>
 
-    <button onclick="choose('truth')">Truth
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M528 320C528 434.9 434.9 528 320 528C205.1 528 112 434.9 112 320C112 205.1 205.1 112 320 112C434.9 112 528 205.1 528 320zM320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64zM224 312C237.3 312 248 301.3 248 288C248 274.7 237.3 264 224 264C210.7 264 200 274.7 200 288C200 301.3 210.7 312 224 312zM440 288C440 274.7 429.3 264 416 264C402.7 264 392 274.7 392 288C392 301.3 402.7 312 416 312C429.3 312 440 301.3 440 288zM256 416C242.7 416 232 426.7 232 440C232 453.3 242.7 464 256 464L384 464C397.3 464 408 453.3 408 440C408 426.7 397.3 416 384 416L256 416zM224 240C250.5 240 272 261.5 272 288C272 314.5 250.5 336 224 336C197.5 336 176 314.5 176 288C176 261.5 197.5 240 224 240zM224 368C268.2 368 304 332.2 304 288C304 243.8 268.2 208 224 208C179.8 208 144 243.8 144 288C144 332.2 179.8 368 224 368zM368 288C368 261.5 389.5 240 416 240C442.5 240 464 261.5 464 288C464 314.5 442.5 336 416 336C389.5 336 368 314.5 368 288zM496 288C496 243.8 460.2 208 416 208C371.8 208 336 243.8 336 288C336 332.2 371.8 368 416 368C460.2 368 496 332.2 496 288z"/></svg>
-    </button>
-    <button onclick="choose('dare')">Dare
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM198.1 217.9L224 243.8L249.9 217.9C257.7 210.1 270.4 210.1 278.2 217.9C286 225.7 286 238.4 278.2 246.2L252.3 272.1L278.2 298C286 305.8 286 318.5 278.2 326.3C270.4 334.1 257.7 334.1 249.9 326.3L224 300.4L198.1 326.3C190.3 334.1 177.6 334.1 169.8 326.3C162 318.5 162 305.8 169.8 298L195.7 272.1L169.8 246.2C162 238.4 162 225.7 169.8 217.9C177.6 210.1 190.3 210.1 198.1 217.9zM390.1 217.9L416 243.8L441.9 217.9C449.7 210.1 462.4 210.1 470.2 217.9C478 225.7 478 238.4 470.2 246.2L444.3 272.1L470.2 298C478 305.8 478 318.5 470.2 326.3C462.4 334.1 449.7 334.1 441.9 326.3L416 300.4L390.1 326.3C382.3 334.1 369.6 334.1 361.8 326.3C354 318.5 354 305.8 361.8 298L387.7 272.1L361.8 246.2C354 238.4 354 225.7 361.8 217.9C369.6 210.1 382.3 210.1 390.1 217.9zM320 352C355.3 352 384 380.7 384 416C384 451.3 355.3 480 320 480C284.7 480 256 451.3 256 416C256 380.7 284.7 352 320 352z"/></svg>
-    </button>
-    <button onclick="choose('punishment')">Punishment</button>
-    <button onclick="endGame()">🏆 End Game</button>
+      <button id="toggleMusic">🔊 Toggle Music</button>
+      <br /><br />
 
-    <p id="question"></p>
+      <button onclick="choose('truth')">
+        Truth
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+          <path
+            d="M528 320C528 434.9 434.9 528 320 528C205.1 528 112 434.9 112 320C112 205.1 205.1 112 320 112C434.9 112 528 205.1 528 320zM320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64zM224 312C237.3 312 248 301.3 248 288C248 274.7 237.3 264 224 264C210.7 264 200 274.7 200 288C200 301.3 210.7 312 224 312zM440 288C440 274.7 429.3 264 416 264C402.7 264 392 274.7 392 288C392 301.3 402.7 312 416 312C429.3 312 440 301.3 440 288zM256 416C242.7 416 232 426.7 232 440C232 453.3 242.7 464 256 464L384 464C397.3 464 408 453.3 408 440C408 426.7 397.3 416 384 416L256 416zM224 240C250.5 240 272 261.5 272 288C272 314.5 250.5 336 224 336C197.5 336 176 314.5 176 288C176 261.5 197.5 240 224 240zM224 368C268.2 368 304 332.2 304 288C304 243.8 268.2 208 224 208C179.8 208 144 243.8 144 288C144 332.2 179.8 368 224 368zM368 288C368 261.5 389.5 240 416 240C442.5 240 464 261.5 464 288C464 314.5 442.5 336 416 336C389.5 336 368 314.5 368 288zM496 288C496 243.8 460.2 208 416 208C371.8 208 336 243.8 336 288C336 332.2 371.8 368 416 368C460.2 368 496 332.2 496 288z"
+          />
+        </svg>
+      </button>
+      <button onclick="choose('dare')">
+        Dare
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+          <path
+            d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM198.1 217.9L224 243.8L249.9 217.9C257.7 210.1 270.4 210.1 278.2 217.9C286 225.7 286 238.4 278.2 246.2L252.3 272.1L278.2 298C286 305.8 286 318.5 278.2 326.3C270.4 334.1 257.7 334.1 249.9 326.3L224 300.4L198.1 326.3C190.3 334.1 177.6 334.1 169.8 326.3C162 318.5 162 305.8 169.8 298L195.7 272.1L169.8 246.2C162 238.4 162 225.7 169.8 217.9C177.6 210.1 190.3 210.1 198.1 217.9zM390.1 217.9L416 243.8L441.9 217.9C449.7 210.1 462.4 210.1 470.2 217.9C478 225.7 478 238.4 470.2 246.2L444.3 272.1L470.2 298C478 305.8 478 318.5 470.2 326.3C462.4 334.1 449.7 334.1 441.9 326.3L416 300.4L390.1 326.3C382.3 334.1 369.6 334.1 361.8 326.3C354 318.5 354 305.8 361.8 298L387.7 272.1L361.8 246.2C354 238.4 354 225.7 361.8 217.9C369.6 210.1 382.3 210.1 390.1 217.9zM320 352C355.3 352 384 380.7 384 416C384 451.3 355.3 480 320 480C284.7 480 256 451.3 256 416C256 380.7 284.7 352 320 352z"
+          />
+        </svg>
+      </button>
+      <button onclick="choose('punishment')">Punishment</button>
+      <button onclick="endGame()">🏆 End Game</button>
 
-    <div id="answerSection" style="display:none;">
-      <input type="text" id="truthAnswer" placeholder="Write your answer...">
-      <button onclick="submitAnswer()">Submit Answer</button>
+      <p id="question"></p>
+
+      <div id="answerSection" style="display: none">
+        <input
+          type="text"
+          id="truthAnswer"
+          placeholder="Write your answer..."
+        />
+        <button onclick="submitAnswer()">Submit Answer</button>
+      </div>
+
+      <div id="dareSection" style="display: none">
+        <input type="file" id="dareProof" />
+        <button onclick="submitProof()">Submit Proof</button>
+      </div>
+
+      <div id="history">
+        <h3>📜 Game History</h3>
+        <div id="historyList"></div>
+      </div>
     </div>
 
-    <div id="dareSection" style="display:none;">
-      <input type="file" id="dareProof">
-      <button onclick="submitProof()">Submit Proof</button>
-    </div>
+    <script>
+      const players = [];
+      let scores = {};
+      let currentPlayer = "";
+      let currentTask = "";
+      const truths = [
+        "What is your biggest fear?",
+        "Have you ever lied to your best friend?",
+        "What's the most embarrassing moment of your life?",
+        "Have you ever cheated on a test?",
+        "What is your guilty pleasure?",
+        "Have you ever had a crush on a friend's sibling?",
+        "What's the worst thing you've done at school?",
+        "Have you ever pretended to be sick to skip school?",
+        "What's the most childish thing you still do?",
+        "Have you ever stolen something?",
+        "What's a secret you've never told anyone?",
+        "Have you ever faked an excuse to get out of trouble?",
+        "What's the weirdest dream you've ever had?",
+        "Have you ever cried over something silly?",
+        "What's the most awkward date you've been on?",
+        "Have you ever lied about your age?",
+        "What's a habit you can't quit?",
+        "Have you ever peeked at someone's messages?",
+        "What's your worst cooking disaster?",
+        "Have you ever talked behind someone's back?",
+      ];
 
-    <div id="history">
-      <h3>📜 Game History</h3>
-      <div id="historyList"></div>
-    </div>
-  </div>
+      const dares = [
+        "Sing a song loudly 🎤",
+        "Do 10 pushups 💪",
+        "Dance for 30 seconds 💃",
+        "Wear socks on your hands for 10 minutes 🧦",
+        "Talk in a silly accent for 5 minutes 🎭",
+        "Do an impression of someone in the room",
+        "Post a funny selfie on social media",
+        "Run around the room 3 times",
+        "Balance a book on your head for 1 minute 📚",
+        "Try to lick your elbow 😛",
+        "Do 20 jumping jacks",
+        "Draw a mustache on your face with a marker",
+        "Speak only in questions for 2 minutes ❓",
+        "Act like a chicken for 1 minute 🐔",
+        "Make a funny face and hold it for 30 seconds",
+        "Do your best celebrity impression",
+        "Talk like a robot for 3 minutes 🤖",
+        "Recite a tongue twister 3 times fast",
+        "Try to touch your toes without bending knees",
+        "Pretend to be a cat for 2 minutes 🐱",
+      ];
 
-  <script>
-    const players = [];
-    let scores = {};
-    let currentPlayer = "";
-    let currentTask = "";
-   const truths = [
-  "What is your biggest fear?",
-  "Have you ever lied to your best friend?",
-  "What's the most embarrassing moment of your life?",
-  "Have you ever cheated on a test?",
-  "What is your guilty pleasure?",
-  "Have you ever had a crush on a friend's sibling?",
-  "What's the worst thing you've done at school?",
-  "Have you ever pretended to be sick to skip school?",
-  "What's the most childish thing you still do?",
-  "Have you ever stolen something?",
-  "What's a secret you've never told anyone?",
-  "Have you ever faked an excuse to get out of trouble?",
-  "What's the weirdest dream you've ever had?",
-  "Have you ever cried over something silly?",
-  "What's the most awkward date you've been on?",
-  "Have you ever lied about your age?",
-  "What's a habit you can't quit?",
-  "Have you ever peeked at someone's messages?",
-  "What's your worst cooking disaster?",
-  "Have you ever talked behind someone's back?"
-];
+      const punishments = [
+        "Drink a glass of water in one go",
+        "Say sorry to everyone loudly",
+        "Spin around 5 times",
+        "Do 10 jumping jacks",
+        "Imitate someone in the room",
+        "Text a random emoji to a friend",
+        "Do 5 pushups",
+        "Sing the chorus of a song",
+        "Hop on one leg for 1 minute",
+        "Say tongue twister 3 times",
+        "Wear a funny hat for 5 minutes",
+        "Walk backward for 2 minutes",
+        "Dance without music for 1 minute",
+        "Make a funny face and hold it for 30 seconds",
+        "Do 20 squats",
+        "Recite the alphabet backward",
+        "Pretend to be a waiter and serve everyone",
+        "Say a joke loudly",
+        "Spin in a circle 10 times",
+        "Do a plank for 30 seconds",
+      ];
+      let currentTruthIndex = 0;
+      let currentDareIndex = 0;
+      let currentPunishmentIndex = 0;
+      // Background music control
 
-const dares = [
-  "Sing a song loudly 🎤",
-  "Do 10 pushups 💪",
-  "Dance for 30 seconds 💃",
-  "Wear socks on your hands for 10 minutes 🧦",
-  "Talk in a silly accent for 5 minutes 🎭",
-  "Do an impression of someone in the room",
-  "Post a funny selfie on social media",
-  "Run around the room 3 times",
-  "Balance a book on your head for 1 minute 📚",
-  "Try to lick your elbow 😛",
-  "Do 20 jumping jacks",
-  "Draw a mustache on your face with a marker",
-  "Speak only in questions for 2 minutes ❓",
-  "Act like a chicken for 1 minute 🐔",
-  "Make a funny face and hold it for 30 seconds",
-  "Do your best celebrity impression",
-  "Talk like a robot for 3 minutes 🤖",
-  "Recite a tongue twister 3 times fast",
-  "Try to touch your toes without bending knees",
-  "Pretend to be a cat for 2 minutes 🐱"
-];
+      const bgm = document.getElementById("bgm");
+      let musicPlaying = false;
 
-const punishments = [
-  "Drink a glass of water in one go",
-  "Say sorry to everyone loudly",
-  "Spin around 5 times",
-  "Do 10 jumping jacks",
-  "Imitate someone in the room",
-  "Text a random emoji to a friend",
-  "Do 5 pushups",
-  "Sing the chorus of a song",
-  "Hop on one leg for 1 minute",
-  "Say tongue twister 3 times",
-  "Wear a funny hat for 5 minutes",
-  "Walk backward for 2 minutes",
-  "Dance without music for 1 minute",
-  "Make a funny face and hold it for 30 seconds",
-  "Do 20 squats",
-  "Recite the alphabet backward",
-  "Pretend to be a waiter and serve everyone",
-  "Say a joke loudly",
-  "Spin in a circle 10 times",
-  "Do a plank for 30 seconds"
-];
-    let currentTruthIndex = 0;
-    let currentDareIndex = 0;   
-    let currentPunishmentIndex = 0;
-    // Background music control
-    
-
-    const bgm = document.getElementById("bgm");
-    let musicPlaying = false;
-
-    document.getElementById("toggleMusic").onclick = function () {
-      if (musicPlaying) { bgm.pause(); musicPlaying = false; }
-      else { bgm.play(); musicPlaying = true; }
-    };
-
-    function addPlayer() {
-      const name = document.getElementById("playerName").value;
-      if (name && !players.includes(name)) {
-        players.push(name);
-        scores[name] = 0;
-        document.getElementById("playersList").innerText = players.join(", ");
-        document.getElementById("playerName").value = "";
-      }
-    }
-
-    function playSound(id) { document.getElementById(id).play(); }
-
-    function choose(type) {
-      if (players.length === 0) {
-        alert("Add players first!");
-        return;
-      }
-
-      currentPlayer = players[Math.floor(Math.random() * players.length)];
-      let q = "";
-
-      if (type === "truth") {
-        q = truths[Math.floor(Math.random() * truths.length)];
-        document.getElementById("answerSection").style.display = "block";
-        document.getElementById("dareSection").style.display = "none";
-        playSound("soundTruthClick");
-        currentTask = "truth";
-      } else if (type === "dare") {
-        q = dares[Math.floor(Math.random() * dares.length)];
-        document.getElementById("dareSection").style.display = "block";
-        document.getElementById("answerSection").style.display = "none";
-        playSound("soundDareClick");
-        currentTask = "dare";
-      } else {
-        q = punishments[Math.floor(Math.random() * punishments.length)];
-        document.getElementById("answerSection").style.display = "none";
-        document.getElementById("dareSection").style.display = "none";
-        playSound("soundPunish");
-        addHistory(`${currentPlayer} got a punishment: ${q}`);
-        return;
-      }
-
-      document.getElementById("question").innerText = `${currentPlayer}, your ${type}: ${q}`;
-    }
-
-    function submitAnswer() {
-      const ans = document.getElementById("truthAnswer").value;
-      if (ans && currentTask === "truth") {
-        addHistory(`${currentPlayer} answered truth: "${ans}"`);
-        scores[currentPlayer]++;
-        playSound("soundTruthComplete");
-        document.getElementById("truthAnswer").value = "";
-        document.getElementById("answerSection").style.display = "none";
-      }
-    }
-
-    function submitProof() {
-      const fileInput = document.getElementById("dareProof");
-      if (fileInput.files.length > 0 && currentTask === "dare") {
-        const file = fileInput.files[0];
-        let proofHTML = "";
-
-        if (file.type.startsWith("image/")) {
-          proofHTML = `<img src="${URL.createObjectURL(file)}" width="100" class="proof">`;
-        } else if (file.type.startsWith("video/")) {
-          proofHTML = `<video controls width="150" class="proof"><source src="${URL.createObjectURL(file)}"></video>`;
-        } else if (file.type.startsWith("audio/")) {
-          proofHTML = `<audio controls class="proof"><source src="${URL.createObjectURL(file)}"></audio>`;
+      document.getElementById("toggleMusic").onclick = function () {
+        if (musicPlaying) {
+          bgm.pause();
+          musicPlaying = false;
         } else {
-          proofHTML = `<p class="proof">Proof uploaded: ${file.name}</p>`;
+          bgm.play();
+          musicPlaying = true;
+        }
+      };
+
+      function addPlayer() {
+  const name = document.getElementById("playerName").value;
+  if (name && !players.includes(name)) {
+    players.push(name);
+    scores[name] = 0;
+    document.getElementById("playersList").innerText = players.join(", ");
+    document.getElementById("playerName").value = "";
+
+    // Send to Flask server
+    fetch('/submit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `playerName=${encodeURIComponent(name)}`
+    });
+  }
+}
+      function playSound(id) {
+        document.getElementById(id).play();
+      }
+
+      function choose(type) {
+        if (players.length === 0) {
+          alert("Add players first!");
+          return;
         }
 
-        addHistory(`${currentPlayer} completed dare with proof: ${proofHTML}`);
-        scores[currentPlayer]++;
-        playSound("soundDareComplete");
-        fileInput.value = "";
-        document.getElementById("dareSection").style.display = "none";
+        currentPlayer = players[Math.floor(Math.random() * players.length)];
+        let q = "";
+
+        if (type === "truth") {
+          q = truths[Math.floor(Math.random() * truths.length)];
+          document.getElementById("answerSection").style.display = "block";
+          document.getElementById("dareSection").style.display = "none";
+          playSound("soundTruthClick");
+          currentTask = "truth";
+        } else if (type === "dare") {
+          q = dares[Math.floor(Math.random() * dares.length)];
+          document.getElementById("dareSection").style.display = "block";
+          document.getElementById("answerSection").style.display = "none";
+          playSound("soundDareClick");
+          currentTask = "dare";
+        } else {
+          q = punishments[Math.floor(Math.random() * punishments.length)];
+          document.getElementById("answerSection").style.display = "none";
+          document.getElementById("dareSection").style.display = "none";
+          playSound("soundPunish");
+          addHistory(`${currentPlayer} got a punishment: ${q}`);
+          return;
+        }
+
+        document.getElementById(
+          "question"
+        ).innerText = `${currentPlayer}, your ${type}: ${q}`;
       }
-    }
 
-    function addHistory(entry) {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = entry;
-      document.getElementById("historyList").prepend(div);
-    }
-
-    function endGame() {
-      let winner = null;
-      let maxScore = -1;
-      for (let p in scores) {
-        if (scores[p] > maxScore) {
-          maxScore = scores[p];
-          winner = p;
+      function submitAnswer() {
+        const ans = document.getElementById("truthAnswer").value;
+        if (ans && currentTask === "truth") {
+          addHistory(`${currentPlayer} answered truth: "${ans}"`);
+          scores[currentPlayer]++;
+          playSound("soundTruthComplete");
+          document.getElementById("truthAnswer").value = "";
+          document.getElementById("answerSection").style.display = "none";
         }
       }
-      if (winner) {
-        addHistory(`🏆 Winner is <b>${winner}</b> with ${maxScore} points!`);
-        playSound("soundWin");
-      } else {
-        addHistory("No winner, no tasks completed yet!");
+
+      function submitProof() {
+        const fileInput = document.getElementById("dareProof");
+        if (fileInput.files.length > 0 && currentTask === "dare") {
+          const file = fileInput.files[0];
+          let proofHTML = "";
+
+          if (file.type.startsWith("image/")) {
+            proofHTML = `<img src="${URL.createObjectURL(
+              file
+            )}" width="100" class="proof">`;
+          } else if (file.type.startsWith("video/")) {
+            proofHTML = `<video controls width="150" class="proof"><source src="${URL.createObjectURL(
+              file
+            )}"></video>`;
+          } else if (file.type.startsWith("audio/")) {
+            proofHTML = `<audio controls class="proof"><source src="${URL.createObjectURL(
+              file
+            )}"></audio>`;
+          } else {
+            proofHTML = `<p class="proof">Proof uploaded: ${file.name}</p>`;
+          }
+
+          addHistory(
+            `${currentPlayer} completed dare with proof: ${proofHTML}`
+          );
+          scores[currentPlayer]++;
+          playSound("soundDareComplete");
+          fileInput.value = "";
+          document.getElementById("dareSection").style.display = "none";
+        }
       }
-    }
-  </script>
-</body>
+
+      function addHistory(entry) {
+        const div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = entry;
+        document.getElementById("historyList").prepend(div);
+      }
+
+      function endGame() {
+        let winner = null;
+        let maxScore = -1;
+        for (let p in scores) {
+          if (scores[p] > maxScore) {
+            maxScore = scores[p];
+            winner = p;
+          }
+        }
+        if (winner) {
+          addHistory(`🏆 Winner is <b>${winner}</b> with ${maxScore} points!`);
+          playSound("soundWin");
+        } else {
+          addHistory("No winner, no tasks completed yet!");
+        }
+      }
+    </script>
+  </body>
 </html>
