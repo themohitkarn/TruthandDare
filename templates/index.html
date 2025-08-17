@@ -3,82 +3,142 @@
   <head>
     <meta charset="UTF-8" />
     <title>Truth or Dare Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #510d27;
-        text-align: center;
-        padding: 20px;
-      }
-      #game {
-        max-width: 650px;
-        margin: auto;
-        background: #aa2355;
-        padding: 34px;
-        border-radius: 20px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      }
-      #playerName {
-        width: 200px;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        margin-bottom: 10px;
-      }
-      button {
-        padding: 10px 20px;
-        margin: 5px;
-        border: none;
-        border-radius: 8px;
-        background: #ef88ad;
-        color: #fff;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #792755;
-      }
-      #history {
-        text-align: left;
-        margin-top: 20px;
-        max-height: 250px;
-        overflow-y: auto;
-        border-top: 2px solid #ddd;
-        padding-top: 10px;
-      }
-      .entry {
-        border-bottom: 1px solid #eee;
-        padding: 8px 0;
-      }
-      #truthAnswer,
-      #dareProof {
-        width: 100%;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        margin-top: 10px;
-      }
-      .proof {
-        margin-top: 5px;
-      }
+   body {
+  font-family: Arial, sans-serif;
+  background: #510d27;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden; /* ✅ Side scroll hatane ke liye */
+}
+
+#game {
+  max-width: 650px;
+  margin: auto;
+  background: #aa2355;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#playerName {
+  width: 200px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #ef88ad;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #792755;
+}
+
+#history {
+  text-align: left;
+  margin-top: 20px;
+  max-height: 250px;
+  overflow-y: auto;
+  border-top: 2px solid #ddd;
+  padding-top: 10px;
+}
+
+.entry {
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+}
+
+#truthAnswer,
+#dareProof {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+}
+
+.proof {
+  margin-top: 5px;
+}
+
+/* 🔥 Mobile Responsive Fix */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+    overflow-x: hidden; /* ✅ Horizontal scroll remove */
+  }
+
+  /* #game {
+    width: 100%;
+    padding: 15px;
+  } */
+   #game, .container {
+    margin: 0;         /* side se margin hata dega */
+    padding: 10px;     /* optional: thoda sa padding rakhna */
+    width: 100%;       /* pura screen cover karega */
+    box-sizing: border-box;
+  }
+
+  #playerName {
+    margin: 0;
+    width: 100%;
+    padding: 15px;
+     box-sizing: border-box;
+  }
+
+  button {
+    width: 100%;
+    padding: 30px;  /* ✅ Button chhota */
+    font-size: 13px;
+    margin: 4px 0;
+  }
+
+   svg {
+    display: none;
+  }
+
+
+  img {
+    max-width: 100px; /* ✅ Image bhi chhoti */
+    height: auto;
+  }
+
+  #history {
+    max-height: 150px;
+    font-size: 13px;
+  }
+}
+
     </style>
   </head>
   <body>
     <div id="game">
       <h2>🔥 Truth or Dare 🔥</h2>
+      <!-- Baaki aapka same code yaha hoga -->
+
       <form action="{{ url_for('submit') }}" method="POST" id="playerForm">
-  <input
-    type="text"
-    id="playerName"
-    name="playerName"
-    placeholder="Enter player name"
-  />
-  <button type="button" onclick="addPlayer()">Add Player</button>
-</form>
+        <input
+          type="text"
+          id="playerName"
+          name="playerName"
+          placeholder="Enter player name"
+        />
+        <button type="button" onclick="addPlayer()">Add Player</button>
+      </form>
 
-<p><b>Players:</b> <span id="playersList">None</span></p>
-
-
-  
+      <p><b>Players:</b> <span id="playersList">None</span></p>
 
       <!-- Background Music -->
       <audio
@@ -170,7 +230,6 @@
         "What's the most embarrassing moment of your life?",
         "Have you ever cheated on a test?",
         "What is your guilty pleasure?",
-        "Have you ever had a crush on a friend's sibling?",
         "What's the worst thing you've done at school?",
         "Have you ever pretended to be sick to skip school?",
         "What's the most childish thing you still do?",
@@ -251,21 +310,21 @@
       };
 
       function addPlayer() {
-  const name = document.getElementById("playerName").value;
-  if (name && !players.includes(name)) {
-    players.push(name);
-    scores[name] = 0;
-    document.getElementById("playersList").innerText = players.join(", ");
-    document.getElementById("playerName").value = "";
+        const name = document.getElementById("playerName").value;
+        if (name && !players.includes(name)) {
+          players.push(name);
+          scores[name] = 0;
+          document.getElementById("playersList").innerText = players.join(", ");
+          document.getElementById("playerName").value = "";
 
-    // Send to Flask server
-    fetch('/submit', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: `playerName=${encodeURIComponent(name)}`
-    });
-  }
-}
+          // Send to Flask server
+          fetch("/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `playerName=${encodeURIComponent(name)}`,
+          });
+        }
+      }
       function playSound(id) {
         document.getElementById(id).play();
       }
